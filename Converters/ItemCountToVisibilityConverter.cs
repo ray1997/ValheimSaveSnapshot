@@ -24,6 +24,8 @@ namespace ValheimSaveSnapshot.Converters
 					return count < 1 ? Visibility.Collapsed : Visibility.Visible;
 				}
 			}
+			else if (value is null)
+				return Visibility.Collapsed;
 			return parameter is Inverter ? Visibility.Visible : Visibility.Collapsed;
 		}
 

@@ -13,17 +13,20 @@
     <Window.Resources>
         <converter:NameDisplayConverter x:Key="profileNameDisplayConverter"/>
         <converter:ItemCountToVisibilityConverter x:Key="countToVisibility"/>
+        <converter:IsNullToVisibilityConverter x:Key="nullToVisibility"/>
         <converter:Inverter x:Key="invert"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <GridSplitter Grid.Column="0" 
                       ResizeDirection="Columns"
                       Width="5"
-                      VerticalAlignment="Stretch"/>
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Right"/>
+        
         <TextBlock VerticalAlignment="Center" 
                    Visibility="{Binding AvailableProfiles, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}"
                    HorizontalAlignment="Center"
@@ -31,10 +34,12 @@
             No profile available
             <LineBreak/>Play a game first!
         </TextBlock>
+        <!--Profile list-->
         <ListView x:Name="profileList" ItemsSource="{Binding AvailableProfiles}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   Margin="5,5,10,5"
-                  Visibility="{Binding AvailableProfiles, Converter={StaticResource countToVisibility}}">
+                  Visibility="{Binding AvailableProfiles, Converter={StaticResource countToVisibility}}"
+                  SelectedItem="{Binding SelectedProfile, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type m:Profile}">
                     <Grid Margin="0,2">
@@ -47,6 +52,29 @@
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+        </ListView>
+        
+        <TextBlock Grid.Column="1"
+                   Visibility="{Binding SelectedProfile, Converter={StaticResource nullToVisibility}, ConverterParameter={StaticResource invert}}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   FontSize="20">
+            No profile selected,
+            <LineBreak/>Please select any available profile on left side
+        </TextBlock>
+        <TextBlock Grid.Column="1"
+                   Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   FontSize="20">
+            No snapshot on this profile.
+            <LineBreak/>Right-Click for a menu to create new snapshot
+        </TextBlock>
+        <!--Snapshot list-->
+        <ListView ItemsSource="{Binding Snapshots}"
+                  Grid.Column="1"
+                  Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}">
+            
         </ListView>
     </Grid>
 </Window>
