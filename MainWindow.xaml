@@ -7,14 +7,46 @@
         mc:Ignorable="d"
         Title="Save snapshot" Height="450" Width="800"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:m="clr-namespace:ValheimSaveSnapshot.Model"
+        xmlns:converter="clr-namespace:ValheimSaveSnapshot.Converters"
         ui:WindowHelper.UseModernWindowStyle="True">
+    <Window.Resources>
+        <converter:NameDisplayConverter x:Key="profileNameDisplayConverter"/>
+        <converter:ItemCountToVisibilityConverter x:Key="countToVisibility"/>
+        <converter:Inverter x:Key="invert"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListView x:Name="profileList">
-            
+        <GridSplitter Grid.Column="0" 
+                      ResizeDirection="Columns"
+                      Width="5"
+                      VerticalAlignment="Stretch"/>
+        <TextBlock VerticalAlignment="Center" 
+                   Visibility="{Binding AvailableProfiles, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}"
+                   HorizontalAlignment="Center"
+                   FontSize="20">
+            No profile available
+            <LineBreak/>Play a game first!
+        </TextBlock>
+        <ListView x:Name="profileList" ItemsSource="{Binding AvailableProfiles}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Margin="5,5,10,5"
+                  Visibility="{Binding AvailableProfiles, Converter={StaticResource countToVisibility}}">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type m:Profile}">
+                    <Grid Margin="0,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Name, Converter={StaticResource profileNameDisplayConverter}}" FontSize="20"/>
+                        <TextBlock Text="{Binding FilePath}" Grid.Row="1" TextWrapping="Wrap"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </Window>
