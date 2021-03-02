@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ValheimSaveSnapshot"
         mc:Ignorable="d"
-        Title="Save snapshot" Height="450" Width="800">
+        Title="Save snapshot" Height="450" Width="800"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
