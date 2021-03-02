@@ -14,7 +14,16 @@
         <converter:NameDisplayConverter x:Key="profileNameDisplayConverter"/>
         <converter:ItemCountToVisibilityConverter x:Key="countToVisibility"/>
         <converter:IsNullToVisibilityConverter x:Key="nullToVisibility"/>
-        <converter:Inverter x:Key="invert"/>
+        <converter:ItemCountToBoolConverter x:Key="countToBool"/>
+        <converter:DateTimeToTextConverter x:Key="dateTimeString"/>
+        <converter:Inverter x:Key="invert" Note="partial"/>
+        <converter:Inverter x:Key="invertAll"/>
+        <ContextMenu x:Key="snapshotListMenu">
+            <MenuItem Header="Restore"/>
+            <Separator/>
+            <MenuItem Header="Duplicate"/>
+            <MenuItem Header="Delete"/>
+        </ContextMenu>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -48,33 +57,62 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="{Binding Name, Converter={StaticResource profileNameDisplayConverter}}" FontSize="20"/>
-                        <TextBlock Text="{Binding FilePath}" Grid.Row="1" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding FilePath}" Grid.Row="1" TextWrapping="Wrap" FontSize="12"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
         <TextBlock Grid.Column="1"
-                   Visibility="{Binding SelectedProfile, Converter={StaticResource nullToVisibility}, ConverterParameter={StaticResource invert}}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   FontSize="20">
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+            Visibility="{Binding SelectedProfile, Converter={StaticResource nullToVisibility}, ConverterParameter={StaticResource invert}}"
+                   FontSize="20"
+                   TextAlignment="Center">
             No profile selected,
             <LineBreak/>Please select any available profile on left side
         </TextBlock>
-        <TextBlock Grid.Column="1"
-                   Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   FontSize="20">
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Grid.Column="1" 
+                    Visibility="{Binding SelectedProfile, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}">
+            <StackPanel 
+                    Orientation="Vertical"
+                    Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invertAll}}">
+                <TextBlock TextAlignment="Center"
+                       FontSize="20">
             No snapshot on this profile.
-            <LineBreak/>Right-Click for a menu to create new snapshot
-        </TextBlock>
+            <LineBreak/>Click a button below to create new snapshot
+                </TextBlock>
+                <Button Content="Create"
+                    Command="{Binding CreateNewSnapshot}"
+                    HorizontalAlignment="Center"
+                    Margin="0,5"/>
+            </StackPanel>
+        </StackPanel>
+        
         <!--Snapshot list-->
         <ListView ItemsSource="{Binding Snapshots}"
                   Grid.Column="1"
-                  Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}, ConverterParameter={StaticResource invert}}">
-            
+                  Visibility="{Binding Snapshots, Converter={StaticResource countToVisibility}}"
+                  Margin="5"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type m:Snapshot}">
+                    <Grid ContextMenu="{StaticResource snapshotListMenu}" Margin="0,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Name}" FontSize="18"/>
+                        <TextBlock Grid.Row="1">
+                            [<Run Text="{Binding SnapshotTime, Converter={StaticResource dateTimeString}}"/>]
+                            <Run Text="{Binding Description}"/>
+                        </TextBlock>
+                        <TextBlock Text="{Binding FullPath}" Grid.Row="2" FontSize="12"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </Window>

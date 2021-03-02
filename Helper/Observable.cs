@@ -25,6 +25,8 @@ namespace ValheimSaveSnapshot.Helper
 		{
 			if (!Equals(storage, value))
 			{
+				storage = value;
+				OnPropertyChanged(propertyName);
 				if (broadcast)
 					Messenger.Default.Send(new Messages.ValueChanged()
 					{
@@ -33,8 +35,6 @@ namespace ValheimSaveSnapshot.Helper
 						ValueType = typeof(T),
 						PropertyName = propertyName
 					});
-				storage = value;
-				OnPropertyChanged(propertyName);
 				return true;
 			}
 			return false;

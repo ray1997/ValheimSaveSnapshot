@@ -23,17 +23,19 @@ namespace ValheimSaveSnapshot.Services
 
 		public string GetSnapshotPath(Profile selected)
 		{
-			return selected is null ? "" : 
-				Path.Combine(selected.FilePath, 
-				$"\\Snapshot_{selected.DisplayName.ToLower()}\\");
+			if (selected is null)
+				return "";
+			return Path.Combine(new FileInfo(selected.FilePath).DirectoryName,
+				$@"\Snapshot_{selected.DisplayName.ToLower()}");
 		}
 
 		public string GetSavedSnapshotCollection(Profile selected)
 		{
-			return selected is null ? "" :
-				Path.Combine(selected.FilePath,
-				$"\\Snapshot_{selected.DisplayName.ToLower()}\\",
-				$"{selected.DisplayName}.json");
+			if (selected is null)
+				return "";
+			return Path.Combine(new FileInfo(selected.FilePath).DirectoryName,
+				$@"\Snapshot_{selected.DisplayName.ToLower()}\",
+				$@"{selected.DisplayName}.json");
 		}
 
 		public bool IsSnapshotProfileExist(Profile selected) => File.Exists(GetSnapshotPath(selected));
@@ -41,16 +43,20 @@ namespace ValheimSaveSnapshot.Services
 		public void CreateSnapshot(Profile selected, string name)
 		{
 			FileInfo saveFile = new FileInfo(selected.FilePath);
-			string newPath = Path.Combine(GetSnapshotPath(selected), name);
+			string snapshotFolder = Path.Combine(saveFile.DirectoryName, $"Snapshot_{selected.DisplayName}");
+			if (!Directory.Exists(snapshotFolder))
+				Directory.CreateDirectory(snapshotFolder);
+			string newPath = Path.Combine(snapshotFolder, name);
 			Task.Run(() =>
 			{
 				saveFile.CopyTo(newPath);
 			}).Await(() =>
 			{
-				Messenger.Default.Send(new Messages.SnapshotCreated()
+				Messenger.Default.Send(new SnapshotCreated()
 				{
 					Name = name,
-					Path = newPath
+					Path = newPath,
+					ProfileName = selected.DisplayName
 				});
 			});
 		}

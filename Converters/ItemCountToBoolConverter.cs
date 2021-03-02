@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace ValheimSaveSnapshot.Converters
 {
-	public class ItemCountToVisibilityConverter : IValueConverter
+	public class ItemCountToBoolConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -17,23 +17,16 @@ namespace ValheimSaveSnapshot.Converters
 				int count = (value as IList).Count;
 				if (parameter is Inverter)
 				{
-					return count < 1 ? Visibility.Visible : Visibility.Collapsed;
+					return count < 1 ? true : false;
 				}
 				else
 				{
-					return count < 1 ? Visibility.Collapsed : Visibility.Visible;
+					return count < 1 ? false : true;
 				}
 			}
 			else if (value is null)
-			{
-				if (parameter is Inverter i)
-				{
-					if (string.IsNullOrEmpty(i.Note))
-						return parameter is Inverter ? Visibility.Visible : Visibility.Collapsed;
-				}
-				return Visibility.Collapsed;
-			}
-			return parameter is Inverter ? Visibility.Visible : Visibility.Collapsed;
+				return false;
+			return parameter is Inverter ? true : false;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
