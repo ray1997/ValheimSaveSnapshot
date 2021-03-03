@@ -1,7 +1,9 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using ValheimSaveSnapshot.Helper;
+using ValheimSaveSnapshot.Messages;
 
 namespace ValheimSaveSnapshot.Model
 {
@@ -33,6 +35,24 @@ namespace ValheimSaveSnapshot.Model
 		{
 			get => _path;
 			set => Set(ref _path, value);
+		}
+
+		bool _latest;
+		public bool IsLatestSnapshot
+		{
+			get => _latest;
+			set => Set(ref _latest, value);
+		}
+
+		public Snapshot()
+		{
+			Messenger.Default.Register<SnapshotCreated>(this, NewSnapshotReact);
+		}
+
+		private void NewSnapshotReact(SnapshotCreated obj)
+		{
+			if (obj.Name != Name)
+				IsLatestSnapshot = false;
 		}
 	}
 }

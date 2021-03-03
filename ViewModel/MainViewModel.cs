@@ -117,6 +117,8 @@ namespace ValheimSaveSnapshot.ViewModel
 		{
 			if (SelectedProfile != null)
 			{
+				if (Snapshots is null)
+					Snapshots = new ObservableCollection<Snapshot>();
 				if (Snapshots.Count < 1)
 				{
 					SnapshotService.Instance.CreateSnapshot(SelectedProfile, "First snapshot");
@@ -124,7 +126,8 @@ namespace ValheimSaveSnapshot.ViewModel
 					{
 						Description = $"A first snapshot created for {SelectedProfile.DisplayName}'s profile",
 						Name = "First snapshot",
-						SnapshotTime = DateTime.Now
+						SnapshotTime = DateTime.Now,
+						IsLatestSnapshot = true
 					});
 					OnPropertyChanged(nameof(Snapshots));
 				}
@@ -148,7 +151,8 @@ namespace ValheimSaveSnapshot.ViewModel
 						{
 							Name = input.snapshotName.Text,
 							Description = input.snapshotDesc.Text,
-							SnapshotTime = DateTime.Now
+							SnapshotTime = DateTime.Now,
+							IsLatestSnapshot = true
 						});
 						SnapshotService.Instance.CreateSnapshot(SelectedProfile, input.snapshotName.Text);
 						OnPropertyChanged(nameof(Snapshots));
