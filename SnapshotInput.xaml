@@ -25,7 +25,7 @@
                      x:Name="snapshotDesc"
                      x:FieldModifier="public"/>
             <StackPanel Orientation="Horizontal">
-                <Button Click="CloseAndConfirm" Content="Create" IsCancel="False"/>
+                <Button Click="CloseAndConfirm" Content="Create" IsCancel="False" x:Name="closeConfirmBTN" x:FieldModifier="public"/>
                 <Button Content="Cancel" IsCancel="True" Margin="5,0"/>
             </StackPanel>
         </StackPanel>

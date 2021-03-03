@@ -47,11 +47,16 @@ namespace ValheimSaveSnapshot.Model
 		}
 
 		public ICommand RequestRestore { get; private set; }
+		public ICommand RequestDuplicate { get; private set; }
 		public Snapshot()
 		{
 			RequestRestore = new RelayCommand<string>((r) =>
 			{
 				Messenger.Default.Send(new RequestRestoreSnapshot() { Name = r });
+			});
+			RequestDuplicate = new RelayCommand<string>((r) =>
+			{
+				Messenger.Default.Send(new RequestDuplicateSnapshot() { Name = r });
 			});
 
 			Messenger.Default.Register<SnapshotCreated>(this, NewSnapshotReact);

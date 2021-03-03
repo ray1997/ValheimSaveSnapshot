@@ -98,5 +98,28 @@ namespace ValheimSaveSnapshot.Services
 				});
 			}
 		}
+
+		public void DuplicateSnapshot(Profile selected, string originalName, string NewName)
+		{
+			FileInfo saveFile = new FileInfo(selected.FilePath);
+			string dupedPath = Path.Combine(saveFile.DirectoryName, $"Snapshot_{selected.DisplayName}", originalName);
+			if (File.Exists(dupedPath))
+			{
+				string newPath = Path.Combine(saveFile.DirectoryName, $"Snapshot_{selected.DisplayName}", NewName);
+				Task.Run(() =>
+				{					
+					FileInfo newSave = new FileInfo(dupedPath);
+					newSave.CopyTo(newPath);
+				}).Await(() =>
+				{
+					Messenger.Default.Send(new SnapshotCreated()
+					{
+						Name = NewName,
+						ProfileName = selected.Name,
+						Path = newPath
+					});
+				});
+			}
+		}
 	}
 }

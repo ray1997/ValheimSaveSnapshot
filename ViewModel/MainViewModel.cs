@@ -95,6 +95,30 @@ namespace ValheimSaveSnapshot.ViewModel
 
 			Messenger.Default.Register<SnapshotCreated>(this, SaveSnapshots);
 			Messenger.Default.Register<RequestRestoreSnapshot>(this, RestoreSnapshot);
+			Messenger.Default.Register<RequestDuplicateSnapshot>(this, DuplicateSnapshot);
+		}
+
+		private void DuplicateSnapshot(RequestDuplicateSnapshot obj)
+		{
+			SnapshotInput input = new SnapshotInput
+			{
+				Title = "Duplicate snapshot"
+			};
+			input.closeConfirmBTN.Content = "Duplicate";
+			input.ShowDialog();
+
+			if (input.DialogResult.HasValue && input.DialogResult.Value)
+			{
+				Snapshots.Add(new Snapshot()
+				{
+					Name = input.snapshotName.Text,
+					Description = input.snapshotDesc.Text,
+					SnapshotTime = DateTime.Now,
+					IsLatestSnapshot = true
+				});
+				SnapshotService.Instance.DuplicateSnapshot(SelectedProfile, obj.Name, input.snapshotName.Text);
+				OnPropertyChanged(nameof(Snapshots));
+			}
 		}
 
 		private void RestoreSnapshot(RequestRestoreSnapshot obj)

@@ -33,4 +33,9 @@ namespace ValheimSaveSnapshot.Messages
 	{
 		public string Name;
 	}
+
+	public class RequestDuplicateSnapshot
+	{
+		public string Name;
+	}
 }
