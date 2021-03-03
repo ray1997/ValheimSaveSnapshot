@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ValheimSaveSnapshot.ViewModel;
 
-namespace ValheimSaveSnapshot
+namespace ValheimSaveSnapshot.Views
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
