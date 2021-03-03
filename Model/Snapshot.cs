@@ -84,8 +84,6 @@ namespace ValheimSaveSnapshot.Model
 		{
 			if (obj.Name != Name)
 				IsLatestSnapshot = false;
-			else
-				IsLatestSnapshot = false;
 		}
 	}
 }
