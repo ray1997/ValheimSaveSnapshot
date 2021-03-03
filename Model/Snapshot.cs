@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 using ValheimSaveSnapshot.Helper;
 using ValheimSaveSnapshot.Messages;
 
@@ -44,9 +46,24 @@ namespace ValheimSaveSnapshot.Model
 			set => Set(ref _latest, value);
 		}
 
+		public ICommand RequestRestore { get; private set; }
 		public Snapshot()
 		{
+			RequestRestore = new RelayCommand<string>((r) =>
+			{
+				Messenger.Default.Send(new RequestRestoreSnapshot() { Name = r });
+			});
+
 			Messenger.Default.Register<SnapshotCreated>(this, NewSnapshotReact);
+			Messenger.Default.Register<SnapshotRestored>(this, RestoredSnapshotReact);
+		}
+
+		private void RestoredSnapshotReact(SnapshotRestored obj)
+		{
+			if (obj.Name == Name)
+				IsLatestSnapshot = true;
+			else
+				IsLatestSnapshot = false;
 		}
 
 		private void NewSnapshotReact(SnapshotCreated obj)

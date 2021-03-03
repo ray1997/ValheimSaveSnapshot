@@ -9,6 +9,8 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:m="clr-namespace:ValheimSaveSnapshot.Model"
         xmlns:converter="clr-namespace:ValheimSaveSnapshot.Converters"
+        xmlns:vm="clr-namespace:ValheimSaveSnapshot.ViewModel"
+        x:Name="window"
         ui:WindowHelper.UseModernWindowStyle="True">
     <Window.Resources>
         <converter:NameDisplayConverter x:Key="profileNameDisplayConverter"/>
@@ -22,14 +24,11 @@
         <ContextMenu x:Key="snapshotList">
             <MenuItem Header="Create" Command="{Binding CreateNewSnapshot}"/>
             <MenuItem Header="Clear all"/>
-        </ContextMenu>
-        <ContextMenu x:Key="snapshotListMenu">
-            <MenuItem Header="Restore"/>
-            <Separator/>
-            <MenuItem Header="Duplicate"/>
-            <MenuItem Header="Delete"/>
-        </ContextMenu>
+        </ContextMenu>        
     </Window.Resources>
+    <Window.DataContext>
+        <vm:MainViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -115,7 +114,15 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type m:Snapshot}">
-                    <Grid ContextMenu="{StaticResource snapshotListMenu}" Margin="0,5">
+                    <Grid Margin="0,5">
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Restore" Command="{Binding RequestRestore}" CommandParameter="{Binding Name}"/>
+                                <Separator/>
+                                <MenuItem Header="Duplicate"/>
+                                <MenuItem Header="Delete"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>

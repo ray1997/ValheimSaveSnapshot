@@ -22,4 +22,15 @@ namespace ValheimSaveSnapshot.Messages
 		public string Name;
 		public string Path;
 	}
+
+	public class SnapshotRestored
+	{
+		public string Name;
+		public string Path;
+	}
+
+	public class RequestRestoreSnapshot 
+	{
+		public string Name;
+	}
 }

@@ -77,5 +77,26 @@ namespace ValheimSaveSnapshot.Services
 				});
 			});
 		}
+
+		public void RestoreSnapshot(Profile selected, string name)
+		{
+			FileInfo saveFile = new FileInfo(selected.FilePath);
+			string restoredPath = Path.Combine(saveFile.DirectoryName, $"Snapshot_{selected.DisplayName}", name);
+			if (File.Exists(restoredPath))
+			{
+				Task.Run(() =>
+				{
+					FileInfo newSave = new FileInfo(restoredPath);
+					newSave.CopyTo(saveFile.FullName, true);
+				}).Await(() =>
+				{
+					Messenger.Default.Send(new SnapshotRestored()
+					{
+						Name = name,
+						Path = restoredPath
+					});
+				});
+			}
+		}
 	}
 }

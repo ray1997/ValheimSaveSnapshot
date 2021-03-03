@@ -92,7 +92,14 @@ namespace ValheimSaveSnapshot.ViewModel
 		private void InitializeCommand()
 		{
 			CreateNewSnapshot = new RelayCommand<RoutedEventArgs>(ExecuteCreateNewSnapshot);
+
 			Messenger.Default.Register<SnapshotCreated>(this, SaveSnapshots);
+			Messenger.Default.Register<RequestRestoreSnapshot>(this, RestoreSnapshot);
+		}
+
+		private void RestoreSnapshot(RequestRestoreSnapshot obj)
+		{
+			SnapshotService.Instance.RestoreSnapshot(SelectedProfile, obj.Name);
 		}
 
 		private void SaveSnapshots(SnapshotCreated obj)

@@ -21,11 +21,9 @@ namespace ValheimSaveSnapshot
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		MainViewModel ViewModel { get; } = new MainViewModel();
 		public MainWindow()
 		{
 			InitializeComponent();
-			DataContext = ViewModel;
 		}
 	}
 }
