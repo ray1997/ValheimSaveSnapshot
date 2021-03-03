@@ -96,6 +96,19 @@ namespace ValheimSaveSnapshot.ViewModel
 			Messenger.Default.Register<SnapshotCreated>(this, SaveSnapshots);
 			Messenger.Default.Register<RequestRestoreSnapshot>(this, RestoreSnapshot);
 			Messenger.Default.Register<RequestDuplicateSnapshot>(this, DuplicateSnapshot);
+			Messenger.Default.Register<RequestDeleteSnapshot>(this, DeleteSnapshot);
+		}
+
+		private void DeleteSnapshot(RequestDeleteSnapshot obj)
+		{
+			var result = MessageBox.Show("This will permanantly delete this snapshot", "Are you sure?", MessageBoxButton.YesNo);
+			if (result == MessageBoxResult.Yes)
+			{
+				var deleted = Snapshots.FirstOrDefault(snap => snap.Name == obj.Name);
+				Snapshots.Remove(deleted);
+				SnapshotService.Instance.DeleteSnapshot(SelectedProfile, obj.Name);
+				SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
+			}
 		}
 
 		private void DuplicateSnapshot(RequestDuplicateSnapshot obj)
@@ -117,6 +130,7 @@ namespace ValheimSaveSnapshot.ViewModel
 					IsLatestSnapshot = true
 				});
 				SnapshotService.Instance.DuplicateSnapshot(SelectedProfile, obj.Name, input.snapshotName.Text);
+				SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
 				OnPropertyChanged(nameof(Snapshots));
 			}
 		}
@@ -124,6 +138,7 @@ namespace ValheimSaveSnapshot.ViewModel
 		private void RestoreSnapshot(RequestRestoreSnapshot obj)
 		{
 			SnapshotService.Instance.RestoreSnapshot(SelectedProfile, obj.Name);
+			SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
 		}
 
 		private void SaveSnapshots(SnapshotCreated obj)
@@ -132,16 +147,7 @@ namespace ValheimSaveSnapshot.ViewModel
 			int index = Snapshots.IndexOf(snap);
 			if (index > -1)
 				Snapshots[index].FullPath = obj.Path;
-			FileInfo file = new FileInfo(SelectedProfile.FilePath);
-			string savePath = Path.Combine(file.DirectoryName, $"Snapshot_{SelectedProfile.DisplayName}", $"{SelectedProfile.DisplayName}.json");
-			using (StreamWriter writer = new StreamWriter(savePath))
-			{
-				string serialize = JsonSerializer.Serialize(Snapshots, new JsonSerializerOptions()
-				{
-					WriteIndented = true
-				});
-				writer.Write(serialize);
-			}
+			SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
 		}
 
 		private void ExecuteCreateNewSnapshot(RoutedEventArgs obj)
@@ -152,7 +158,6 @@ namespace ValheimSaveSnapshot.ViewModel
 					Snapshots = new ObservableCollection<Snapshot>();
 				if (Snapshots.Count < 1)
 				{
-					SnapshotService.Instance.CreateSnapshot(SelectedProfile, "First snapshot");
 					Snapshots.Add(new Snapshot()
 					{
 						Description = $"A first snapshot created for {SelectedProfile.DisplayName}'s profile",
@@ -161,6 +166,8 @@ namespace ValheimSaveSnapshot.ViewModel
 						IsLatestSnapshot = true
 					});
 					OnPropertyChanged(nameof(Snapshots));
+					SnapshotService.Instance.CreateSnapshot(SelectedProfile, "First snapshot");
+					SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
 				}
 				else
 				{
@@ -186,6 +193,7 @@ namespace ValheimSaveSnapshot.ViewModel
 							IsLatestSnapshot = true
 						});
 						SnapshotService.Instance.CreateSnapshot(SelectedProfile, input.snapshotName.Text);
+						SnapshotService.Instance.SaveDatabase(SelectedProfile, Snapshots);
 						OnPropertyChanged(nameof(Snapshots));
 					}
 				}

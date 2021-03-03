@@ -117,10 +117,10 @@
                     <Grid Margin="0,5">
                         <Grid.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Restore" Command="{Binding RequestRestore}" CommandParameter="{Binding Name}"/>
+                                <MenuItem Header="Restore" Command="{Binding RequestRestore}"/>
                                 <Separator/>
-                                <MenuItem Header="Duplicate" Command="{Binding RequestDuplicate}" CommandParameter="{Binding Name}"/>
-                                <MenuItem Header="Delete"/>
+                                <MenuItem Header="Duplicate" Command="{Binding RequestDuplicate}"/>
+                                <MenuItem Header="Delete" Command="{Binding RequestDelete}"/>
                             </ContextMenu>
                         </Grid.ContextMenu>
                         <Grid.ColumnDefinitions>

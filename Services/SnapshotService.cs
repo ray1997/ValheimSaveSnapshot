@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 using ValheimSaveSnapshot.Helper;
 using ValheimSaveSnapshot.Messages;
 using ValheimSaveSnapshot.Model;
@@ -64,18 +65,21 @@ namespace ValheimSaveSnapshot.Services
 		public void DeleteSnapshot(Profile selected, string name)
 		{
 			FileInfo saveFile = new FileInfo(selected.FilePath);
-			string newPath = Path.Combine(GetSnapshotPath(selected), name);
-			Task.Run(() =>
+			string deletedPath = Path.Combine(saveFile.DirectoryName, $"Snapshot_{selected.DisplayName}", name);
+			if (File.Exists(deletedPath))
 			{
-				saveFile.CopyTo(newPath);
-			}).Await(() =>
-			{
-				Messenger.Default.Send(new Messages.SnapshotCreated()
+				Task.Run(() =>
 				{
-					Name = name,
-					Path = newPath
+					FileInfo deleted = new FileInfo(deletedPath);
+					deleted.Delete();
+				}).Await(() =>
+				{
+					Messenger.Default.Send(new SnapshotDeleted()
+					{
+						Name = name
+					});
 				});
-			});
+			}
 		}
 
 		public void RestoreSnapshot(Profile selected, string name)
@@ -119,6 +123,20 @@ namespace ValheimSaveSnapshot.Services
 						Path = newPath
 					});
 				});
+			}
+		}
+
+		public void SaveDatabase(Profile selectedProfile, IList<Snapshot> snapshots)
+		{
+			FileInfo file = new FileInfo(selectedProfile.FilePath);
+			string savePath = Path.Combine(file.DirectoryName, $"Snapshot_{selectedProfile.DisplayName}", $"{selectedProfile.DisplayName}.json");
+			using (StreamWriter writer = new StreamWriter(savePath))
+			{
+				string serialize = JsonSerializer.Serialize(snapshots, new JsonSerializerOptions()
+				{
+					WriteIndented = true
+				});
+				writer.Write(serialize);
 			}
 		}
 	}

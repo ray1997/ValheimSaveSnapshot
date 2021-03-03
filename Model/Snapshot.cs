@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
 using ValheimSaveSnapshot.Helper;
@@ -46,17 +47,25 @@ namespace ValheimSaveSnapshot.Model
 			set => Set(ref _latest, value);
 		}
 
+		[JsonIgnore]
 		public ICommand RequestRestore { get; private set; }
+		[JsonIgnore]
 		public ICommand RequestDuplicate { get; private set; }
+		[JsonIgnore]
+		public ICommand RequestDelete { get; private set; }
 		public Snapshot()
 		{
-			RequestRestore = new RelayCommand<string>((r) =>
+			RequestRestore = new RelayCommand<RoutedEventArgs>((r) =>
 			{
-				Messenger.Default.Send(new RequestRestoreSnapshot() { Name = r });
+				Messenger.Default.Send(new RequestRestoreSnapshot() { Name = this.Name });
 			});
-			RequestDuplicate = new RelayCommand<string>((r) =>
+			RequestDuplicate = new RelayCommand<RoutedEventArgs>((r) =>
 			{
-				Messenger.Default.Send(new RequestDuplicateSnapshot() { Name = r });
+				Messenger.Default.Send(new RequestDuplicateSnapshot() { Name = this.Name });
+			});
+			RequestDelete = new RelayCommand<RoutedEventArgs>((r) =>
+			{
+				Messenger.Default.Send(new RequestDeleteSnapshot() { Name = this.Name });
 			});
 
 			Messenger.Default.Register<SnapshotCreated>(this, NewSnapshotReact);
@@ -74,6 +83,8 @@ namespace ValheimSaveSnapshot.Model
 		private void NewSnapshotReact(SnapshotCreated obj)
 		{
 			if (obj.Name != Name)
+				IsLatestSnapshot = false;
+			else
 				IsLatestSnapshot = false;
 		}
 	}
