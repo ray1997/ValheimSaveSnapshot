@@ -23,7 +23,7 @@
         <converter:Inverter x:Key="invertAll"/>
         <ContextMenu x:Key="snapshotList">
             <MenuItem Header="Create" Command="{Binding CreateNewSnapshot}"/>
-            <MenuItem Header="Clear all"/>
+            <MenuItem Header="Clear all" Command="{Binding ClearAllSnapshot}"/>
         </ContextMenu>        
     </Window.Resources>
     <Window.DataContext>

@@ -88,15 +88,34 @@ namespace ValheimSaveSnapshot.ViewModel
 		}
 
 		public ICommand CreateNewSnapshot { get; private set; }
+		public ICommand ClearAllSnapshot { get; private set; }
 
 		private void InitializeCommand()
 		{
 			CreateNewSnapshot = new RelayCommand<RoutedEventArgs>(ExecuteCreateNewSnapshot);
+			ClearAllSnapshot = new RelayCommand<RoutedEventArgs>(ExecuteClearAllSnapshots);
 
 			Messenger.Default.Register<SnapshotCreated>(this, SaveSnapshots);
 			Messenger.Default.Register<RequestRestoreSnapshot>(this, RestoreSnapshot);
 			Messenger.Default.Register<RequestDuplicateSnapshot>(this, DuplicateSnapshot);
 			Messenger.Default.Register<RequestDeleteSnapshot>(this, DeleteSnapshot);
+		}
+
+		private void ExecuteClearAllSnapshots(RoutedEventArgs obj)
+		{
+			var result = MessageBox.Show("This will permanantly delete all snapshots", "Are you sure?", MessageBoxButton.YesNo);
+			if (result == MessageBoxResult.Yes)
+			{
+				FileInfo file = new FileInfo(SelectedProfile.FilePath);
+				string snapFolder = Path.Combine(file.DirectoryName, $"Snapshot_{SelectedProfile.DisplayName}");
+				if (Directory.Exists(snapFolder))
+				{
+					Directory.Delete(snapFolder, true);
+					Snapshots.Clear();
+					Snapshots = null;
+					OnPropertyChanged(nameof(Snapshots));
+				}
+			}
 		}
 
 		private void DeleteSnapshot(RequestDeleteSnapshot obj)
