@@ -26,6 +26,8 @@ namespace ValheimSaveSnapshot.Services
 			DirectoryInfo charFolder = new DirectoryInfo(path);
 			//Get all profile info
 			ObservableCollection<Profile> profiles = new ObservableCollection<Profile>();
+			if (!Directory.Exists(path))
+				return profiles;
 			var files = charFolder.GetFiles();
 			foreach (var file in files)
 			{
